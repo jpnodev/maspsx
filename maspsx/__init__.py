@@ -668,9 +668,15 @@ class MaspsxProcessor:
                     self.skip_instructions = 1
                 res.append(f"nop # DEBUG: Reuse of '{r_dest}'. {reason}")
         else:
-            res.append(
-                f"#nop # DEBUG: '{next_instruction}' does not load from {r_dest}"
-            )
+            parts = next_instruction.split("\t")
+            # If the next instruction overwrites the same register loaded by the current instruction,
+            # PsyQ AS0 inserts a nop due to pipeline hazard constraints on early MIPS processors.
+            if len(parts) >= 2 and parts[0] in ("lw", "lh", "lhu", "lb", "lbu") and parts[1].split(",")[0] == r_dest:
+                res.append(f"nop # DEBUG: '{next_instruction}' overwrites {r_dest}")
+            else:
+                res.append(
+                    f"#nop # DEBUG: '{next_instruction}' does not load from {r_dest}"
+                )
 
         return res
 
