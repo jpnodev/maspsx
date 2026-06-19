@@ -99,7 +99,7 @@ def main() -> None:
             sys.stderr.write("MASPSX: Error, no input file found!\n")
             sys.exit(1)
 
-        with open(input_file, "r", encoding="utf") as f:
+        with open(input_file, "r", encoding="latin-1") as f:
             in_lines = f.readlines()
 
     if args.print_input:
